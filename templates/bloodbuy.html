@@ -1,0 +1,57 @@
+{% extends 'baseheader.html' %}
+{% load static %}
+
+{% block 'main' %}
+
+<!-- Purchase Section -->
+<section id="buy" class="py-5 bg-light" style="min-height: 100vh;">
+    <div class="container">
+        <h2 class="text-center mb-4">Purchase Blood</h2>
+       
+        <form method="POST" action="{% url 'confirmbuydetails' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="buyerBloodType" class="form-label">Required Blood Type</label>
+                    <select id="buyerBloodType" name="buyerBloodType" class="form-select" required>
+                        <option selected disabled>Choose...</option>
+                        {% for blood_type in types %}  
+                            <option value="{{ blood_type.type }}">{{ blood_type.type }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="buyerQuantity" class="form-label">Quantity (Units (1 unit = 450ml))</label>
+                    <input type="number" name="buyerQuantity" class="form-control" id="buyerQuantity" placeholder="Enter quantity" min="1" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="donorEmail" class="form-label">Email</label>
+                    <input type="email" name="donorEmail" class="form-control" id="donorEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="buyerContact" class="form-label">Contact Number</label>
+                    <input type="text" name="buyerContact" class="form-control" id="buyerContact" placeholder="Enter your contact number" required>
+                </div>
+            </div>
+            <!-- <a class="btn btn-warning" href="/confirmorder">Confirm Order</a> -->
+            <button type="submit" class="btn btn-danger">Confirm Order</button>
+        </form>
+        
+        <!-- End of form -->
+    </div>
+</section>
+
+<!-- Display success or error messages -->
+{% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock 'main' %}

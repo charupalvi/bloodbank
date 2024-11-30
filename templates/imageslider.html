@@ -1,0 +1,10 @@
+<section id="imgslide">
+
+    <div class="slider">
+        <div class="slides">
+            {% for image in images %}
+                <img src="{{ image.image.url }}" alt="Slide {{ forloop.counter }}">
+            {% endfor %}
+        </div>
+    </div>
+</section>

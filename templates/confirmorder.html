@@ -1,0 +1,62 @@
+{% extends 'baseheader.html' %}
+{% load static %}
+
+{% block 'main' %}
+
+<div class="d-flex flex-column min-vh-100">
+    <!-- Main Content -->
+    <main class="flex-grow-1">
+        <div class="container py-5">
+            <!-- Display Messages -->
+            {% for msg in messages %}
+            <div class="mb-4">
+                {% if msg.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div class="alert alert-warning" role="alert">
+                    {{ msg }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="shadow p-4 bg-white rounded">
+                <h2 class="text-center mb-4 text-danger"><b>Confirm Your Order</b></h2>
+
+                <div class="row">
+                    <!-- Order Summary -->
+                    <div class="col-md-8 mb-4">
+                        <h4 class="text-primary"><b>Order Summary:</b></h4>
+                        <ul class="list-group">
+                            {% for cart in cartlist %}
+                            <li class="list-group-item">
+                                <strong>Blood Group: {{ cart.type }}</strong><br>
+                                Quantity: {{ cart.quantity }} units<br>
+                                Price: Rs. {{ cart.total_price }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Billing Summary -->
+                    <div class="col-md-4">
+                        <h4 class="text-primary"><b>Billing Summary:</b></h4>
+                        <p class="mb-2"><strong>Subtotal:</strong> Rs. {{ total }}</p>
+                        <p class="mb-2"><strong>GST (18%):</strong> Rs. {{ gst }}</p>
+                        <h5 class="text-danger"><strong>Total:</strong> Rs. {{ grand_total }}</h5>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <a href="/makepayment" class="btn btn-success btn-lg">Proceed to Payment</a>
+                            <a href="{% url 'bloodbuy' %}" class="btn btn-danger btn-lg">Back to Buy</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer
+    <footer class="bg-dark text-white py-3 text-center mt-auto">
+        <p class="mb-0">&copy; 2024 Blood Donation Portal. All rights reserved.</p>
+    </footer> -->
+</div>
+
+{% endblock 'main' %}
