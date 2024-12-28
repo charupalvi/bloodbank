@@ -25,9 +25,8 @@ class Bloodsell(models.Model):
     quantity=models.CharField(max_length=200)
     price=models.IntegerField()
 
+
 class Blooddonate(models.Model):
-    name=models.CharField(max_length=50)
-    email=models.CharField(max_length=70)
     BLOOD_TYPE_CHOICES = [
         ('A+', 'A+'),
         ('A-', 'A-'),
@@ -38,15 +37,12 @@ class Blooddonate(models.Model):
         ('O+', 'O+'),
         ('O-', 'O-'),
     ]
+    name = models.CharField(max_length=50)
+    email = models.CharField(max_length=70)
+    type = models.CharField(max_length=3, choices=BLOOD_TYPE_CHOICES, verbose_name='Donate Blood Type')
+    mobile = models.CharField(max_length=10)
+    address = models.TextField(max_length=100)
 
-    type = models.CharField(
-        max_length=3,
-        choices=BLOOD_TYPE_CHOICES,
-        verbose_name='Donate Blood Type'
-    )
-    # type=models.CharField(max_length=4)
-    mobile=models.CharField(max_length=10)
-    address=models.TextField(max_length=100)
 
 class Confirmbuydetails(models.Model):
     userid = models.ForeignKey(User,on_delete=models.CASCADE,db_column='userid')
@@ -71,3 +67,12 @@ class SliderImage(models.Model):
 
     def __str__(self):
         return f"Slider Image {self.id}"
+
+class ContactUs(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Contact from {self.name} ({self.email})"

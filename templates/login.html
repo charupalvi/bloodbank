@@ -50,7 +50,10 @@
             <button type="submit" class="btn btn-danger w-100"><b>Login</b></button>
           </div>
           <div class="text-center mt-3">
-            <small>Not a User? <a href="register.html" class="text-danger fw-bold">Register</a></small>
+            <small><a href="{% url 'password_reset' %}" class="text-danger fw-bold">Forgot Password?</a></small>
+        </div>
+          <div class="text-center mt-3">
+            <small>Not a User? <a href="/register" class="text-danger fw-bold">Register</a></small>
           </div>
         </form>
       </div>

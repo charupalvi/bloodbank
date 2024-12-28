@@ -1,11 +1,15 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate,login,logout
 from django.views import View
-from bloodapp.models import Bloodsell,Blooddonate,Bloodorder,Confirmbuydetails,SliderImage
+from bloodapp.models import Bloodsell,Blooddonate,Bloodorder,Confirmbuydetails,SliderImage,ContactUs
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A5
@@ -15,6 +19,8 @@ from datetime import timedelta
 from datetime import datetime
 from django.core.mail import send_mail
 import razorpay
+from django.conf import settings
+
 
 
 blood_type=Bloodsell.objects.values('type').distinct()
@@ -82,6 +88,68 @@ def userLogout(request):
     messages.warning(request,'Logout Successfully')
     return redirect('/')
 
+
+def password_reset_request(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        
+        try:
+            # Check if user exists with both email and username
+            user = User.objects.get(email=email, username=username)
+            
+            # Generate the reset token
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            
+            # Create the reset URL
+            reset_url = request.build_absolute_uri(f'/password_reset_confirm/{uid}/{token}/')
+
+            # Send the email with the reset link
+            subject = "Password Reset Request"
+            message = render_to_string('password_reset_email.html', {
+                'user': user,
+                'reset_url': reset_url,
+            })
+            send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
+
+            return redirect('password_reset_done')
+        
+        except User.DoesNotExist:
+            # If the user with this email and username doesn't exist, show an error message
+            return render(request, 'password_reset.html', {'error': 'No user found with this email and username combination.'})
+
+    return render(request, 'password_reset.html')
+
+def password_reset_done(request):
+    return render(request, 'password_reset_done.html')
+
+
+def password_reset_confirm(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (User.DoesNotExist, ValueError):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            new_password = request.POST.get('password')
+            confirm_password = request.POST.get('confirm_password')
+            if new_password == confirm_password:
+                user.set_password(new_password)
+                user.save()
+                return redirect('password_reset_complete')
+            else:
+                return render(request, 'password_reset_confirm.html', {'error': 'Passwords do not match'})
+
+        return render(request, 'password_reset_confirm.html')
+    else:
+        return render(request, 'password_reset_confirm.html', {'error': 'Invalid or expired token'})
+
+
+def password_reset_complete(request):
+    return render(request, 'password_reset_complete.html')
 
 
 
@@ -232,6 +300,32 @@ def bloodDonate(request):
 
         return redirect('/')
     
+
+def donationList(request):
+    query = request.GET.get('q', '')
+    blood_type_filter = request.GET.get('blood_type', '')
+
+    donations = Blooddonate.objects.all()
+
+    if query:
+        donations = donations.filter(
+            Q(name__icontains=query) |
+            Q(email__icontains=query) |
+            Q(mobile__icontains=query) |
+            Q(address__icontains=query)
+        )
+
+    if blood_type_filter:
+        donations = donations.filter(type=blood_type_filter)
+
+    return render(request, 'donation_list.html', {
+        'donations': donations,
+        'query': query,
+        'blood_type_filter': blood_type_filter,
+        'blood_types': Blooddonate.BLOOD_TYPE_CHOICES,
+    })
+
+
 
 
 # def blood_buy_view(request):
@@ -492,8 +586,38 @@ def confirmBuyDetails(request):
         # If accessed via GET, redirect to bloodbuy page
         return redirect('bloodbuy')
 
-def contact(request):
-    return render(request,'contactus.html')
+def contact_us(request):
+    if request.method == 'POST':
+        # Using get() to avoid errors if fields are missing
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        message = request.POST.get('message')
+
+        # Check if all fields are present
+        if name and email and message:
+            # Save data to the database
+            contact = ContactUs(name=name, email=email, message=message)
+            contact.save()
+
+            # Send email to admin
+            send_mail(
+                subject=f"Contact Us: Message from {name}",
+                message=message,
+                from_email=email,
+                recipient_list=[settings.ADMIN_EMAIL],
+                fail_silently=False,
+            )
+
+            # Display a success message
+            messages.success(request, "Your message has been sent successfully!")
+
+            # Redirect to a thank you or home page after submission
+            return redirect('contact_us')  # or any other view you want to redirect to
+        else:
+            messages.error(request, "Please fill out all fields.")
+
+    return render(request, 'contactus.html')
+
 
 # def confirmOrder(request):
 #     userid=request.user

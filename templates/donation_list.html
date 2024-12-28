@@ -1,0 +1,67 @@
+{% extends 'baseheader.html' %}
+{% load static %}
+
+{% block 'main' %}
+<div class="d-flex flex-column min-vh-100">
+    <!-- Main Content Section -->
+    <section class="flex-grow-1">
+        <div class="container mt-5">
+            <h2 class="text-center mb-4">Donated Blood List</h2>
+
+            <!-- Search and Filter Form -->
+            <form method="GET" action="{% url 'donations' %}" class="d-flex flex-wrap justify-content-between mb-3">
+                <div class="d-flex mb-2">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        class="form-control me-2" 
+                        placeholder="Search by name, email, mobile, etc." 
+                        value="{{ query|default:'' }}">
+                    <button type="submit" class="btn btn-primary me-2">Search</button>
+                </div>
+                <div>
+                    <select name="blood_type" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Blood Types</option>
+                        {% for blood_type, display in blood_types %}
+                            <option value="{{ blood_type }}" {% if blood_type_filter == blood_type %}selected{% endif %}>
+                                {{ display }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+
+            <!-- Donation List Table -->
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Sr. No.</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Blood Type</th>
+                        <th>Mobile</th>
+                        <th>Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for donation in donations %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ donation.name }}</td>
+                        <td>{{ donation.email }}</td>
+                        <td>{{ donation.type }}</td>
+                        <td>{{ donation.mobile }}</td>
+                        <td>{{ donation.address }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">No donations found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+{% endblock 'main' %}

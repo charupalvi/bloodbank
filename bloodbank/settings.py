@@ -147,3 +147,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'dcharlie919@gmail.com'
 EMAIL_HOST_PASSWORD = 'konv txvw fkqh jeda'
 EMAIL_USE_TLS = True
+ADMIN_EMAIL = 'dcharlie919@gmail.com'

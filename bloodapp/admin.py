@@ -1,5 +1,5 @@
 from django.contrib import admin
-from bloodapp.models import Blooddonate,Bloodorder,Bloodsell,SliderImage,Confirmbuydetails
+from bloodapp.models import Blooddonate,Bloodorder,Bloodsell,SliderImage,Confirmbuydetails,ContactUs
 # Register your models here.
 class Bloodadmin(admin.ModelAdmin):
     list_display=['id','type','quantity','price']
@@ -20,8 +20,14 @@ class Confirmbuyadmin(admin.ModelAdmin):
 class SliderImageAdmin(admin.ModelAdmin):
     list_display = ('id', 'caption')
 
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'message', 'created_at')
+    search_fields = ('name', 'email')
+    list_filter = ('created_at',)
+
 admin.site.register(Bloodsell,Bloodadmin)
 admin.site.register(Bloodorder,Orderadmin)
 admin.site.register(Confirmbuydetails,Confirmbuyadmin)
 admin.site.register(Blooddonate,Donateadmin)
 admin.site.register(SliderImage,SliderImageAdmin)
+admin.site.register(ContactUs, ContactUsAdmin)

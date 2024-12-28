@@ -2,28 +2,40 @@
 {% load static %}
 
 {% block 'main' %}
-<section style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f8f9fa;">
+<section class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6">
-                <form class="shadow p-4 rounded bg-white" action="" method="get">
+            <div class="col-md-8 col-lg-6">
+                <!-- Form container with shadow, padding, and border for a cleaner look -->
+                <div class="shadow p-4 bg-white rounded" style="border: 1px solid #ddd;">
                     <h3 class="text-center mb-4"><b>Contact Us</b></h3>
-                    <div class="mb-3">
-                        <label for="name" class="form-label"><b>Name:</b></label>
-                        <input type="text" class="form-control form-control-lg" id="name" placeholder="Enter Name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label"><b>Email Id:</b></label>
-                        <input type="email" class="form-control form-control-lg" id="email" placeholder="Enter email address" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="message" class="form-label"><b>Message:</b></label>
-                        <textarea class="form-control form-control-lg" id="message" rows="4" placeholder="Enter Message" required></textarea>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-danger btn-lg w-100"><b>Send</b></button>
-                    </div>
-                </form>
+                    <form action="" method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3 row">
+                            <label for="name" class="col-sm-3 col-form-label"><b>Name:</b></label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control form-control-lg" id="name" name="name" placeholder="Enter Name" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="email" class="col-sm-3 col-form-label"><b>Email Id:</b></label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="Enter email address" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 row">
+                            <label for="message" class="col-sm-3 col-form-label"><b>Message:</b></label>
+                            <div class="col-sm-9">
+                                <textarea class="form-control form-control-lg" id="message" name="message" rows="4" placeholder="Enter Message" required></textarea>
+                            </div>
+                        </div>
+                        <!-- Centered button -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-danger btn-lg w-75"><b>Send</b></button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
